@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="./img/favicon.ico">
+  <title>Medcare</title>
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Meu CSS -->
+  <link href="./css/medcare.css" rel="stylesheet">
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <!-- Axios.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"
+    integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <!-- Check if user is logged in -->
+  <script src="./js/auth.js"></script>
+</head>
+
+<body>
+  <div id="meu-header">
+    <meu-header></meu-header>
+  </div>
+
+  <main id="medicamento" role="main" class="pt-5">
+    <div class="container">
+      <!-- Main Content -->
+      <div class="row mb-4">
+        <div class="col-sm-12">
+          <h1 class="page-header">Manter Medicamento</h1>
+          <hr>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
+          <form id="medicamento-form">
+            <div class="form-group">
+              <label for="nome">Nome</label> *
+              <input class="form-control" id="nome" name="nome" v-model="nome"
+                placeholder="Digite o nome do medicamento" type="text" value="">
+            </div>
+            <div class="form-group">
+              <label for="indicacao">Indicação</label> *
+              <textarea class="form-control" id="indicacao" v-model="indicacao"
+                placeholder="Para que serve o medicamento..." type="text" value="" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="posologia">Posologia</label> *
+              <textarea class="form-control" id="posologia" v-model="posologia"
+                placeholder="Horários e dosagens do medicamento..." type="text" value="" rows="3"></textarea>
+            </div>
+            <div v-if="filename && id" class="form-group">
+              <a target="_blank" v-bind:href="getDownloadUrl()">Visualizar Bula</a> 
+            </div>
+            <div class="form-group">                
+              <div class="custom-file">
+                <input v-on:change="handleFileUpload()" ref="file" type="file" class="custom-file-input"
+                  id="file-input">
+                <label id="file-input-label" class="custom-file-label" for="file-input">Selecione o arquivo...</label>
+              </div>
+            </div>
+          </form>
+          <button v-on:click="salvar()" id="upload-button" type="button" class="btn btn-primary">Salvar</button>
+          <a class="btn btn-info" href="/medicamento.html" role="button">Limpar</a>
+          <a class="btn btn-secondary" href="/medicamentos.html" role="button">Voltar</a>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+    </div>
+  </main>
+
+  <div id="meu-footer">
+    <meu-footer></meu-footer>
+  </div>
+
+  <!-- Global JS
+    ================================================== -->
+  <script src="./js/main.js"></script>
+
+  <!-- Page JS
+    ================================================== -->
+  <script>
+
+    function initialState() {
+      return {
+        id: '',
+        nome: '',
+        indicacao: '',
+        posologia: '',
+        file: '',
+        filename: '',
+        status: '',
+        msg: '',
+        alertClass: ''
+      }
+    }
+
+    new Vue({
+      el: '#medicamento',
+      data: function () {
+        return initialState();
+      },
+      methods: {
+        handleFileUpload: function () {
+          this.file = this.$refs.file.files[0];
+          this.filename = this.file.name
+          jQuery('#file-input-label').text(this.filename);          
+        },
+
+        baixarArquivo: function(idRegistro) {     
+          console.log("o ID é " + this.id);     
+          jQuery.get("/baixar-bula/" + this.id);
+        },
+
+        getDownloadUrl: function(idRegistro) {
+          return "/baixar-bula/" + this.id;
+        },
+
+        salvar: function () {
+          var self = this;
+          var formData = new FormData();
+          formData.append('id', this.id);
+          formData.append('nome', this.nome);          
+          formData.append('indicacao', this.indicacao);
+          formData.append('posologia', this.posologia);          
+          formData.append("file", this.file);   
+          formData.append("filename", this.filename);          
+
+          axios.post('/medicamentos',
+            formData,
+            { 
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          ).then(function(response){
+              self.status = response.data.status;
+              self.msg = response.data.msg;
+              if (self.status == 'SUCESSO') {
+                self.alertClass = 'alert-success';
+                //Atualiza o ID para updates
+                if (!self.id)
+                  self.id = response.data.data.id;
+              } else {
+                self.alertClass = 'alert-danger';
+              }
+          });
+        }
+      },
+      mounted() {
+        var self = this;
+        var idMedicamento = localStorage.getItem("idModelo");
+        if (idMedicamento) {
+          //É um update, e não um novo registro
+          jQuery.get("/medicamentos/" + idMedicamento, function (response) {
+            self.id = response.data.id;
+            self.nome = response.data.nome;
+            self.indicacao = response.data.indicacao;
+            self.posologia = response.data.posologia;
+            self.file = response.data.bula;       
+            self.filename = response.data.filename;     
+            localStorage.setItem("idModelo", "");
+          });
+        }
+      }
+    })
+  </script>
+
+</body>
+
+</html>

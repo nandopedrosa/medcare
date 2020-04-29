@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="./img/favicon.ico">
+  <title>Medcare</title>
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Meu CSS -->
+  <link href="./css/medcare.css" rel="stylesheet">
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <!-- Axios.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+  <!-- Vue Table 2.js -->
+  <script src="https://unpkg.com/vuetable-2@next"></script>
+  <!-- Vue Select.js -->
+  <!-- use the latest vue-select release -->
+  <script src="https://unpkg.com/vue-select@latest"></script>
+  <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+  <!-- Bootstrap core JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"
+    integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <!-- Check if user is logged in -->
+  <script src="./js/auth.js"></script>
+</head>
+
+<body>
+  <div id="meu-header">
+    <meu-header></meu-header>
+  </div>
+
+  <main id="prontuario" role="main" class="pt-5">
+    <div class="container">
+      <!-- Main Content -->
+      <div class="row mb-4">
+        <div class="col-sm-12">
+          <h1 class="page-header">Ver Paciente</h1>
+          <hr>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p>{{nome}}</p>
+          <p>{{sexoPorExtenso(sexo)}}</p>
+          <p>{{idade}} anos</p>
+          <p v-if="peso">{{peso}} kgs</p>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header ">
+              Sintomas comuns e medicamentos recomendados
+            </div>
+            <div class="card-body">
+              <button @click="prepararModalTratamento(true)" type="button" class="btn btn-info mb-5" data-toggle="modal"
+                data-target="#formTratamento">
+                + Adicionar
+              </button>
+              <template>
+                <vuetable ref="vuetable" :api-mode="false" :data="tratamentos" v-bind:fields="camposTabelaTratamento"
+                  data-path="data">
+                  <div slot="tratamentoActions" slot-scope="props">
+                    <button @click="deletarTratamento(props.rowData)" type="button" class="btn btn-sm btn-danger mr-2"
+                      title="Deletar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <button data-toggle="modal" data-target="#formTratamento" @click="editarTratamento(props.rowData)"
+                      type="button" class="btn btn-sm btn-primary" title="Editar">
+                      <i class="far fa-edit"></i>
+                    </button>
+                  </div>
+                </vuetable>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header ">
+              Consultas
+            </div>
+            <div class="card-body">
+              <button @click="prepararModalConsulta(true)" type="button" class="btn btn-info mb-5" data-toggle="modal"
+                data-target="#formConsulta">
+                + Adicionar
+              </button>
+              <template>
+                <vuetable ref="vuetable" :api-mode="false" :data="consultas" v-bind:fields="camposTabelaConsulta"
+                  data-path="data">
+                  <div slot="consultaActions" slot-scope="props">
+                    <button @click="deletarConsulta(props.rowData)" type="button" class="btn btn-sm btn-danger mr-2"
+                      title="Deletar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <button data-toggle="modal" data-target="#formConsulta" @click="editarConsulta(props.rowData)"
+                      type="button" class="btn btn-sm btn-primary mr-2" title="Editar">
+                      <i class="far fa-edit"></i>
+                    </button>
+                    <button data-toggle="modal" data-target="#formAnexosConsulta"
+                      @click="adicionarAnexoConsulta(props.rowData)" type="button" class="btn btn-sm btn-info"
+                      title="Editar">
+                      <i class="fas fa-paperclip"></i>
+                    </button>
+                  </div>
+                </vuetable>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Anexos Consulta -->
+    <div class="modal fade" id="formAnexosConsulta" tabindex="-1" role="dialog"
+      aria-labelledby="formAnexosConsultaLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="formAnexosConsultaLabel"> Anexo Consulta </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
+            <div class="form-group">
+              <label for="nomeAnexoConsulta">Nome/Descrição</label> *
+              <input class="form-control" id="nomeAnexoConsulta" name="nomeAnexoConsulta" v-model="nomeAnexoConsulta"
+                type="text" value="">
+            </div>
+            <div class="form-group">
+              <div class="custom-file">
+                <input v-on:change="handleFileUpload('consulta')" ref="fileAnexoConsulta" type="file"
+                  class="custom-file-input" id="file-input-anexo-consulta">
+                <label id="file-input-anexo-consulta-label" class="custom-file-label"
+                  for="file-input-anexo-consulta">Selecione o arquivo...</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="fecharAnexoConsulta" type="button" class="btn btn-secondary"
+                data-dismiss="modal">Fechar</button>
+              <button @click="salvarAnexoConsulta()" type="button" class="btn btn-primary">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Consulta -->
+    <div class="modal fade" id="formConsulta" tabindex="-1" role="dialog" aria-labelledby="formConsultaLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="formConsultaLabel"> Consulta </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
+            <div class="form-group">
+              <label for="dataConsulta">Data</label> *
+              <input class="form-control" id="dataConsulta" name="dataConsulta" v-model="dataConsulta" type="text"
+                value="">
+            </div>
+            <div class="form-group">
+              <label for="responsavel">Médico/Responsável</label> *
+              <input class="form-control" id="responsavel" name="responsavel" v-model="responsavel"
+                placeholder="Digite o nome do médico ou responsável pela consulta" type="text" value="">
+            </div>
+            <div class="form-group">
+              <label for="quadroConsulta">Quadro/Sintomas</label> *
+              <textarea class="form-control" id="quadroConsulta" v-model="quadroConsulta" type="text" value=""
+                rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="conduta">Conduta</label> *
+              <textarea class="form-control" id="conduta" v-model="conduta" type="text" value="" rows="3"></textarea>
+            </div>
+            <ul id="anexosConsulta" class="list-group">
+              <li class="list-group-item" v-for="anexo in anexosConsulta">{{anexo.nome}} {{anexo.id}}
+                <span class="float-right">
+                  <button @click="deletarAnexoConsulta(anexo.id)" type="button" class="btn btn-sm btn-danger mr-3"
+                    title="Deletar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <a target="_blank" v-bind:href="getAnexoConsultaDownloadUrl(anexo.id)">
+                    <i class="fas fa-download"></i>
+                  </a>
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button id="fecharConsulta" type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            <button @click="salvarConsulta()" type="button" class="btn btn-primary">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal Tratamento -->
+    <div class="modal fade" id="formTratamento" tabindex="-1" role="dialog" aria-labelledby="formTratamentoLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="formTratamentoLabel"> Tratamento </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
+            <div class="form-group">
+              <label for="quadro">Quadro/Sintomas</label> *
+              <textarea class="form-control" id="quadro" v-model="quadroTratamento" type="text" value=""
+                rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Medicamentos recomendados</label> *
+              <v-select v-model="medicamentoSelecionado" label="nome" :options="opcoesMedicamentos"></v-select>
+            </div>
+            <ul id="meds" class="list-group">
+              <li class="list-group-item" v-for="m in medicamentosSelecionados">{{m.nome}}
+                <span class="float-right">
+                  <button @click="deletarMedicamento(m.id)" type="button" class="btn btn-sm btn-danger" title="Deletar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <button @click="verMedicamento(m.id)" type="button" class="ml-2  btn btn-sm btn-info"
+                    title="Ver medicamento">
+                    <i class="far fa-newspaper"></i>
+                  </button>
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button id="fecharTratamento" type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            <button @click="salvarTratamento()" type="button" class="btn btn-primary">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <div id="meu-footer">
+    <meu-footer></meu-footer>
+  </div>
+
+  <!-- Global JS
+    ================================================== -->
+  <script src="./js/main.js"></script>
+
+  <!-- Page JS
+    ================================================== -->
+  <script>
+
+    Vue.use(Vuetable);
+    Vue.component('v-select', VueSelect.VueSelect);
+
+    //Pega um array de objetos e retorna uma string de ID's separados por vírgula
+    var toCommaSeparatedString = function (objArray) {
+      var retorno = '';
+      var i;
+      for (i = 0; i < objArray.length; i++) {
+        retorno += objArray[i].id + ','
+      }
+      return retorno.substring(0, retorno.length - 1);
+    }
+
+    function initialState() {
+      return {
+        id: '',
+        nome: '',
+        sexo: '',
+        dataNascimento: '',
+        dataConsulta: '',
+        responsavel: '',
+        conduta: '',
+        idade: '',
+        peso: '',
+        idTratamento: '',
+        idConsulta: '',
+        quadroTratamento: '',
+        quadroConsulta: '',
+        nomeAnexoConsulta: '',
+        fileAnexoConsulta: '',
+        filenameAnexoConsulta: '',
+        camposTabelaTratamento: [
+          { name: 'id', title: '', visible: false, width: '5%' },
+          { name: 'quadro', title: 'Quadro' },
+          { name: 'medicamentosPorExtenso', title: 'Medicamentos' },
+          { name: 'tratamentoActions', title: '' }
+        ],
+        camposTabelaConsulta: [
+          { name: 'id', title: '', visible: false, width: '5%' },
+          { name: 'data', title: 'Data', formatter: (value) => unixToData(value) },
+          { name: 'responsavel', title: 'Médico/Responsável' },
+          { name: 'quadro', title: 'Quadro' },
+          { name: 'consultaActions', title: '' }
+        ],
+        tratamentos: [],
+        consultas: [],
+        opcoesMedicamentos: [],
+        medicamentoSelecionado: {},
+        medicamentosSelecionados: [],
+        anexosConsulta: [],
+        status: '',
+        msg: '',
+        alertClass: ''
+      }
+    }
+
+    new Vue({
+      el: '#prontuario',
+
+      data: function () {
+        return initialState();
+      },
+
+      watch: {
+        medicamentoSelecionado: function () {
+          if (this.medicamentoSelecionado.id) {
+            //Adiciona o medicamento ao tratamento  
+            this.medicamentosSelecionados.push(this.medicamentoSelecionado);
+            //Atualiza a combo box de opcoes de medicamento (remove o que foi escolhido)
+            var i;
+            for (i = 0; i < this.opcoesMedicamentos.length; i++) {
+              if (this.opcoesMedicamentos[i].id == this.medicamentoSelecionado.id) {
+                this.opcoesMedicamentos.splice(i, 1);
+              }
+            }
+          }
+        }
+      },
+
+      methods: {
+        handleFileUpload: function (modelo) {
+          if (modelo == 'consulta') {
+            this.fileAnexoConsulta = this.$refs.fileAnexoConsulta.files[0];
+            this.filenameAnexoConsulta = this.fileAnexoConsulta.name;
+          }
+          jQuery('#file-input-anexo-consulta-label').text(this.filenameAnexoConsulta);
+        },
+
+        getAnexoConsultaDownloadUrl: function (id) {
+          return "/baixar-anexo-consulta/" + id;
+        },
+
+        salvarTratamento: function () {
+          var self = this;
+          $.ajax({
+            type: 'POST',
+            url: '/tratamentos',
+            data: {
+              'id': self.idTratamento,
+              'idPaciente': localStorage.getItem("idPaciente"),
+              'quadro': self.quadroTratamento,
+              'idMedicamentos': toCommaSeparatedString(self.medicamentosSelecionados)
+            },
+            success: function (response) {
+              self.status = response.status;
+              self.msg = response.msg;
+              if (self.status == 'SUCESSO') {
+                self.alertClass = 'alert-success';
+                jQuery('#fecharTratamento').click();
+                self.carregarTratamentos();
+              } else {
+                self.alertClass = 'alert-danger';
+              }
+            }
+          });
+        },
+
+        salvarConsulta: function () {
+          var self = this;
+          $.ajax({
+            type: 'POST',
+            url: '/consultas',
+            data: {
+              'id': self.idConsulta,
+              'idPaciente': localStorage.getItem("idPaciente"),
+              'quadro': self.quadroConsulta,
+              'responsavel': self.responsavel,
+              'conduta': self.conduta,
+              'data': self.dataConsulta
+            },
+            success: function (response) {
+              self.status = response.status;
+              self.msg = response.msg;
+              if (self.status == 'SUCESSO') {
+                self.alertClass = 'alert-success';
+                jQuery('#fecharConsulta').click();
+                self.carregarConsultas();
+              } else {
+                self.alertClass = 'alert-danger';
+              }
+            }
+          });
+        },
+
+        salvarAnexoConsulta: function () {
+          var self = this;
+          var formData = new FormData();
+          formData.append('idConsulta', this.idConsulta);
+          formData.append('nomeAnexoConsulta', this.nomeAnexoConsulta);
+          formData.append('fileAnexoConsulta', this.fileAnexoConsulta);
+          formData.append('filenameAnexoConsulta', this.filenameAnexoConsulta);
+
+          axios.post('/adicionar-anexo-consulta',
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          ).then(function (response) {
+            self.status = response.data.status;
+            self.msg = response.data.msg;
+            if (self.status == 'SUCESSO') {
+              self.alertClass = 'alert-success';
+            } else {
+              self.alertClass = 'alert-danger';
+            }
+          });
+        },
+
+        deletarMedicamento: function (id) {
+          for (var i = 0; i < this.medicamentosSelecionados.length; i++) {
+            if (this.medicamentosSelecionados[i].id == id) {
+              this.opcoesMedicamentos.push(this.medicamentosSelecionados[i]);
+              this.medicamentosSelecionados.splice(i, 1);
+              break;
+            }
+          }
+        },
+
+        deletarAnexoConsulta: function (id) {
+          var self = this;
+          $.ajax({
+            url: '/anexo-consulta/' + id,
+            type: 'DELETE',
+            success: function (result) {
+              for (var i = 0; i < self.anexosConsulta.length; i++) {
+                if (self.anexosConsulta[i].id == id) {
+                  self.anexosConsulta.splice(i, 1);
+                  break;
+                }
+              }
+            }
+          });
+        },
+
+        verMedicamento: function (id) {
+          window.localStorage.setItem("idModelo", id);
+          window.open('/medicamento.html', '_blank');
+        },
+
+        sexoPorExtenso: function (sexoChar) {
+          var retorno = '';
+          if (sexoChar == 'M')
+            retorno = 'Masculino';
+          else
+            retorno = 'Feminino';
+
+          return retorno;
+        },
+
+        prepararModalAnexoConsulta() {
+          this.filenameAnexoConsulta = '';
+          this.fileAnexoConsulta = '';
+          this.nomeAnexoConsulta = '';
+          this.msg = '';
+          jQuery('#file-input-anexo-consulta-label').text('');
+        },
+
+        prepararModalTratamento(isNovo) {
+          var self = this;
+          this.msg = '';
+          this.medicamentoSelecionado = {};
+          if (isNovo) {
+            this.idTratamento = '';
+            this.quadroTratamento = '';
+            this.medicamentosSelecionados = [];
+            this.carregarOpcoesMedicamentos('');
+          } else {
+            jQuery.get("/tratamentos/" + self.idTratamento, function (response) {
+              self.quadroTratamento = response.data.quadro;
+              self.medicamentosSelecionados = response.data.medicamentos;
+              self.carregarOpcoesMedicamentos(self.idTratamento);
+            });
+          }
+        },
+
+        prepararModalConsulta(isNovo) {
+          var self = this;
+          this.msg = '';
+          this.anexosConsulta = [];
+          if (isNovo) {
+            this.idConsulta = '';
+            this.quadroConsulta = '';
+            this.responsavel = '';
+            this.conduta = '';
+            this.dataConsulta = '';
+          } else {
+            jQuery.get("/consultas/" + self.idConsulta, function (response) {
+              self.quadroConsulta = response.data.quadro;
+              self.responsavel = response.data.responsavel;
+              self.conduta = response.data.conduta;
+              self.dataConsulta = unixToData(response.data.data);
+            });
+
+            jQuery.get("/anexos-consultas/" + self.idConsulta, function (response) {
+              console.log(response);
+              self.anexosConsulta = response.data;
+            });
+          }
+        },
+
+        adicionarAnexoConsulta(data) {
+          this.idConsulta = data.id;
+          this.prepararModalAnexoConsulta();
+        },
+
+        editarConsulta(data) {
+          this.idConsulta = data.id;
+          this.prepararModalConsulta(false);
+        },
+
+        deletarConsulta(data) {
+          var self = this;
+          $.ajax({
+            url: '/consultas/' + data.id,
+            type: 'DELETE',
+            success: function (result) {
+              self.carregarConsultas();
+            }
+          });
+        },
+
+        editarTratamento(data) {
+          this.idTratamento = data.id;
+          this.prepararModalTratamento(false);
+        },
+
+        deletarTratamento(data) {
+          var self = this;
+          $.ajax({
+            url: '/tratamentos/' + data.id,
+            type: 'DELETE',
+            success: function (result) {
+              self.carregarTratamentos();
+            }
+          });
+        },
+
+        carregarTratamentos() {
+          self = this;
+          $.ajax({
+            type: 'GET',
+            url: '/tratamentos',
+            data: {
+              'idPaciente': window.localStorage.getItem("idPaciente")
+            },
+            success: function (response) {
+              self.tratamentos = response.data;
+            }
+          });
+        },
+
+        carregarConsultas() {
+          self = this;
+          $.ajax({
+            type: 'GET',
+            url: '/consultas',
+            data: {
+              'idPaciente': window.localStorage.getItem("idPaciente")
+            },
+            success: function (response) {
+              self.consultas = response.data;
+            }
+          });
+        },
+
+        carregarOpcoesMedicamentos(idTratamento) {
+          var self = this;
+          jQuery.get("/medicamentos", function (response) {
+            if (!idTratamento) {
+              //Todos              
+              self.opcoesMedicamentos = response.data;
+            } else {
+              //Update de um tratamento existente, carregamos apenas os medicamentos restantes
+              jQuery.get("/tratamento-opcoes-medicamentos/" + idTratamento, function (response) {
+                self.opcoesMedicamentos = response.data;
+              });
+            }
+          });
+        }
+      },
+
+      mounted() {
+        var self = this;
+        //Dados do Paciente
+        var idPaciente = localStorage.getItem("idPaciente");
+        if (idPaciente) {
+          jQuery.get("/pacientes/" + idPaciente, function (response) {
+            self.id = response.data.id;
+            self.nome = response.data.nome;
+            self.sexo = response.data.sexo;
+            self.dataNascimento = unixToData(response.data.dataNascimento);
+            self.idade = response.data.idade;
+            self.peso = response.data.peso;
+            localStorage.setItem("idModelo", "");
+          });
+        } else {
+          window.location.href = '/erro.html';
+        }
+        //Carregamentos
+        this.carregarTratamentos();
+        this.carregarConsultas();
+
+        //Listener para o Select Component
+        $('#meds').on('DOMSubtreeModified', function (event) {
+          setTimeout(function () { jQuery('.vs__selected').hide(); }, 100);
+        });
+      }
+    })
+  </script>
+</body>
+
+</html>

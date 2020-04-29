@@ -1,0 +1,21 @@
+//Postgres to Sqlite DDL replacer
+filter  "**/CreateDatabase.sql"
+
+replace "SERIAL"
+with "INTEGER NOT NULL"
+
+replace "double"
+with "REAL"
+
+replace "date"
+with "INTEGER"
+
+replace "long"
+with "INTEGER"
+
+replace "varchar"
+with  "TEXT"
+
+replace "int"
+with "INTEGER"
+

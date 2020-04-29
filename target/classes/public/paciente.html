@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="./img/favicon.ico">
+  <title>Medcare</title>
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Meu CSS -->
+  <link href="./css/medcare.css" rel="stylesheet">
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <!-- Vue Select.js -->
+  <!-- use the latest vue-select release -->
+  <script src="https://unpkg.com/vue-select@latest"></script>
+  <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+  <!-- Bootstrap core JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"
+    integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <!-- Check if user is logged in -->
+  <script src="./js/auth.js"></script>
+</head>
+
+<body>
+  <div id="meu-header">
+    <meu-header></meu-header>
+  </div>
+
+  <main id="paciente" role="main" class="pt-5">
+    <div class="container">
+      <!-- Main Content -->
+      <div class="row mb-4">
+        <div class="col-sm-12">
+          <h1 class="page-header">Manter Paciente</h1>
+          <hr>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
+          <form id="paciente-form">
+            <div class="form-group">
+              <label for="nome">Nome</label> *
+              <input class="form-control" id="nome" name="nome" v-model="nome" placeholder="Digite o nome do paciente"
+                type="text" value="">
+            </div>
+            <div class="form-group">
+              <label>Sexo</label> *
+              <v-select v-model="sexo" :options="sexoOpcoes"></v-select>
+            </div>
+            <div class="form-group">
+              <label for="dataNascimento">Data da nascimento</label> *
+              <input class="form-control" id="dataNascimento" name="dataNascimento" v-model="dataNascimento" type="text"
+                value="">
+            </div>
+            <div class="form-group">
+              <label for="peso">Peso (kg)</label> *
+              <input class="form-control" id="peso" name="peso" v-model="peso" placeholder="0,0 kg" type="text"
+                value="">
+            </div>
+          </form>
+          <button v-on:click="salvar()" type="button" class="btn btn-primary">Salvar</button>
+          <a class="btn btn-info" href="/paciente.html" role="button">Limpar</a>
+          <a class="btn btn-secondary" href="/index.html" role="button">Voltar</a>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+    </div>
+  </main>
+
+  <div id="meu-footer">
+    <meu-footer></meu-footer>
+  </div>
+
+  <!-- Global JS
+    ================================================== -->
+  <script src="./js/main.js"></script>
+
+  <!-- Page JS
+    ================================================== -->
+  <script>
+
+    Vue.component('v-select', VueSelect.VueSelect);  
+
+    function initialState() {
+      return {
+        id: '',
+        nome: '',
+        sexo: '',
+        sexoOpcoes: ['M', 'F'],
+        dataNascimento: '',
+        peso: '',
+        status: '',
+        msg: '',
+        alertClass: ''
+      }
+    }
+
+    new Vue({
+      el: '#paciente',
+      data: function () {
+        return initialState();
+      },
+      methods: {
+        salvar: function () {
+          var self = this;
+          $.ajax({
+            type: 'POST',
+            url: '/pacientes',
+            data: {
+              'id': this.id,
+              'nome': this.nome,
+              'sexo': this.sexo,
+              'dataNascimento': this.dataNascimento,
+              'peso': this.peso
+            },
+            success: function (response) {
+              self.status = response.status;
+              self.msg = response.msg;
+              if (self.status == 'SUCESSO') {
+                self.alertClass = 'alert-success';
+                //Atualiza o ID para updates
+                if (!self.id)
+                  self.id = response.data.id;
+              } else {
+                self.alertClass = 'alert-danger';
+              }
+            }
+          });
+        }
+      },
+      mounted() {
+        var self = this;
+        var idPaciente = localStorage.getItem("idModelo");
+        if (idPaciente) {
+          //É um update, e não um novo registro
+          jQuery.get("/pacientes/" + idPaciente, function (response) {
+            self.id = response.data.id;
+            self.nome = response.data.nome;
+            self.sexo = response.data.sexo;
+            self.dataNascimento = unixToData(response.data.dataNascimento);
+            self.peso = response.data.peso;
+            localStorage.setItem("idModelo", "");
+          });
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

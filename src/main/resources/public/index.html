@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="./img/favicon.ico">
+  <title>Medcare</title>
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Meu CSS -->
+  <link href="./css/medcare.css" rel="stylesheet">
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"
+    integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <!-- Check if user is logged in -->
+  <script src="./js/auth.js"></script>
+</head>
+
+<body>
+  <div id="meu-header">
+    <meu-header></meu-header>
+  </div>
+
+  <main id="home" role="main">
+
+    <section class="jumbotron">
+      <div class="container">
+        <img src="./img/logo.png" class="logo-img mb-3">
+        <p class="lead text-muted">Aplicativo para controle de pacientes e tratamentos médicos.</p>
+        <p>
+          <a href="/paciente.html" class="btn btn-primary my-2">Adicionar Paciente</a>
+          <a href="/medicamentos.html" class="btn btn-secondary my-2">Ver Medicamentos</a>
+        </p>
+      </div>
+    </section>
+
+    <div class="album py-5 bg-light">
+      <div class="container">
+        <div class="row">
+          <!-- Card -->
+          <div class="col-sm-4" v-for="paciente in pacientes">
+            <div class="card mb-4 box-shadow border-top-green">
+              <div class="card-body">
+                <h5 class="card-title">{{paciente.nome}}</h5>
+                <p class="card-text">{{sexoPorExtenso (paciente.sexo)}}, {{paciente.idade}} anos.</p>
+                <div class="d-flex justify-content-between float-right">
+                  <div class="btn-group">
+                    <button @click="verPaciente(paciente.id)" type="button" class="btn  btn-outline-secondary">Ver</button>
+                    <button @click="editarPaciente(paciente.id)" type="button"
+                      class="btn  btn-outline-secondary">Editar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End of Card -->
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="meu-footer">
+    <meu-footer></meu-footer>
+  </div>
+
+  <!-- Global App JS
+    ================================================== -->
+  <script src="./js/main.js"></script>
+
+  <!-- Page JS
+    ================================================== -->
+  <script>
+    new Vue({
+      el: '#home',
+      data: {
+        pacientes: []
+      },
+      methods: {
+        sexoPorExtenso: function (sexoChar) {
+          var retorno = '';
+          if (sexoChar == 'M')
+            retorno = 'Masculino';
+          else
+            retorno = 'Feminino';
+
+          return retorno;
+        },
+        verPaciente: function (idPaciente) {
+          window.localStorage.setItem("idPaciente", idPaciente);
+          window.location.href = '/prontuario.html';
+        },
+        editarPaciente: function (idPaciente) {
+          window.localStorage.setItem("idModelo", idPaciente);
+          window.location.href = '/paciente.html';
+        }
+      },
+      mounted() {
+        var self = this;
+        jQuery.get("/pacientes", function (response) {
+          self.pacientes = response.data;
+        });
+      }
+    })
+  </script>
+
+</body>
+
+</html>

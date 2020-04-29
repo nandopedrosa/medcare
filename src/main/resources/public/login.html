@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="./img/favicon.ico">
+    <title>Medcare</title>
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.12.1/js/all.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Meu CSS -->
+    <link href="./css/medcare.css" rel="stylesheet"> 
+    <!-- Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>  
+    <!-- Bootstrap core JavaScript -->    
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script> 
+ </head>
+
+  <body>     
+    <div id="meu-header">
+        <meu-header></meu-header>
+    </div>
+
+    <main id="login" role="main" class="pt-5">      
+        <div class="container">
+          <!-- Main Content -->
+          <div class="row mb-4">
+            <div class="col-sm-12">
+                <h1 class="page-header">Login</h1>
+                <hr>
+            </div>
+          </div> 
+          <div class="row">
+            <div class="col-sm-12">
+              <div v-show="status == 'ERRO'" class="alert alert-danger" role="alert"> {{msg}} </div>                        
+              <form id="login-form">                                
+                  <div class="form-group">
+                      <label for="email">Email</label> *
+                      <input class="form-control" id="email" name="email" v-model="email" placeholder="Digite seu email" type="text" value="">                    
+                  </div>
+                  <div class="form-group">
+                      <label for="password">Senha</label> *
+                      <input class="form-control" id="password" name="password" v-model="senha" placeholder="Digite sua senha com pelo menos 6 caracteres" type="password" value="">
+                  </div>                        
+              </form>            
+              <button v-on:click="logar()" type="button" class="btn btn-primary">Login</button>
+          </div>
+            <!-- End of Main Content -->
+          </div>
+        </div>      
+    </main>
+
+    <div id="meu-footer">
+        <meu-footer></meu-footer>
+    </div>
+    
+    <!-- Global JS
+    ================================================== -->    
+    <script src="./js/main.js"></script>   
+
+    <!-- Page JS
+    ================================================== -->    
+    <script>
+      new Vue({
+        el : '#login',
+        data: {
+          email: '',
+          senha: '',
+          status: '',
+          msg: ''
+        },
+        methods: {
+          logar: function() {
+            //Precisamos disso para poder acessar THIS dentro do ajax
+            var self = this;
+            $.ajax({
+              type: 'POST',              
+              url: '/login',
+              data: { 
+                  'email': this.email, 
+                  'senha': this.senha 
+              },
+              success: function(response){
+                  self.status = response.status;
+                  if(self.status == 'SUCESSO') {
+                    window.location.href = "/index.html"
+                  } else {                    
+                    self.msg = response.msg;
+                  }
+              }
+            });           
+          }        
+        }        
+      })
+    </script>
+
+  </body>
+</html>
