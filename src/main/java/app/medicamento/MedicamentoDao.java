@@ -6,6 +6,13 @@ import org.sql2o.Query;
 
 public class MedicamentoDao {
 
+    
+    /** 
+     * Retorna todos os medicamentos de um usuário
+     * 
+     * @param idUsuario
+     * @return List<Medicamento>
+     */
     public static List<Medicamento> getAllMedicamentos(int idUsuario) {        
         Query query = 
             DaoUtil.getConexao()
@@ -17,6 +24,37 @@ public class MedicamentoDao {
         return medicamentos;
     }
 
+    
+    /** 
+     * 
+     * Verifica (count) se o medicamento está associado a algum paciente
+     * 
+     * @param idMedicamento
+     * @return boolean
+     */
+    public static boolean isMedicamentoAssociadoTratamento(int idMedicamento) {
+        boolean retorno = true;
+        Query query =
+            DaoUtil.getConexao()
+            .createQuery("select count(*) from tratamento_medicamento where id_medicamento = :idMedicamento")
+            .addParameter("idMedicamento", idMedicamento);
+
+        int count = query.executeScalar(Integer.class);
+
+        if(count == 0)
+            retorno = false;
+
+        return retorno;
+    }
+
+    
+    /** 
+     * 
+     * Retorna um medicamento específico de um usuário
+     * 
+     * @param idMedicamento
+     * @return Medicamento
+     */
     public static Medicamento getMedicamento(int idMedicamento) {        
         Medicamento med = new Medicamento();
         Query query = 
@@ -29,6 +67,13 @@ public class MedicamentoDao {
         return med;
     }
 
+    
+    /** 
+     * 
+     * Deleta um medicamento específico de um usuário
+     * 
+     * @param idMedicamento
+     */
     public static void deletarMedicamento(int idMedicamento) {
         Query query = 
             DaoUtil.getConexao()
@@ -38,6 +83,14 @@ public class MedicamentoDao {
         query.executeUpdate();
     }
 
+    
+    /** 
+     * 
+     * Insere um novo medicamento
+     * 
+     * @param med
+     * @return int
+     */
     public static int inserirMedicamento(Medicamento med) {
         String sql = "insert into medicamento "
         .concat("(id_usuario, nome, indicacao, posologia, bula, filename) ")
@@ -54,6 +107,13 @@ public class MedicamentoDao {
         return key;        
     }
     
+    
+    /** 
+     * 
+     * Atualiza um medicamento existente
+     * 
+     * @param med
+     */
     public static void atualizarMedicamento(Medicamento med) {
         String sql = "update medicamento set "
         .concat("nome = :nome, ")

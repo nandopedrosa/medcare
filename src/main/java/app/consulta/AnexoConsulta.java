@@ -21,71 +21,142 @@ public class AnexoConsulta {
         this.idConsulta = idConsulta;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return String
+     */
     public String getNome() {
         return this.nome;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param nome
+     */
     public void setNome(String nome) {
         this.nome = nome;
     }
 
+    
+    /** 
+     * 
+     * 
+     * Getter padrão
+     * 
+     * @return int
+     */
     public int getId() {
         return this.id;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * 
+     * @return byte[]
+     */
     public byte[] getArquivo() {
         return this.arquivo;
     }
 
+    
+    /** 
+     * 
+     * 
+     * Setter padrão
+     * 
+     * @param arquivo
+     */
     public void setArquivo(byte[] arquivo) {
         this.arquivo = arquivo;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return String
+     */
     public String getFilename() {
         return this.filename;
     }
 
+    
+    /** 
+     * 
+     * 
+     * Setter padrão
+     * 
+     * @param filename
+     */
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return int
+     */
     public int getIdConsulta() {
         return this.idConsulta;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * 
+     * @param idConsulta
+     */
     public void setIdConsulta(int idConsulta) {
         this.idConsulta = idConsulta;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @param nome
+     * @return AnexoConsulta
+     */
     public AnexoConsulta nome(String nome) {
         this.nome = nome;
         return this;
     }
-
-    public AnexoConsulta id(int id) {
-        this.id = id;
-        return this;
-    }
-
-    public AnexoConsulta arquivo(byte[] arquivo) {
-        this.arquivo = arquivo;
-        return this;
-    }
-
-    public AnexoConsulta filename(String filename) {
-        this.filename = filename;
-        return this;
-    }
-
-    public AnexoConsulta idConsulta(int idConsulta) {
-        this.idConsulta = idConsulta;
-        return this;
-    }
-
+       
+    
+    /** 
+     * 
+     * Equals padrão
+     * 
+     * @param o
+     * @return boolean
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -99,11 +170,25 @@ public class AnexoConsulta {
                 && idConsulta == anexoConsulta.idConsulta;
     }
 
+    
+    /** 
+     * 
+     * Hashcode padrão
+     * 
+     * @return int
+     */
     @Override
     public int hashCode() {
         return Objects.hash(nome, id, arquivo, filename, idConsulta);
     }
 
+    
+    /** 
+     * 
+     * toString padrão
+     * 
+     * @return String
+     */
     @Override
     public String toString() {
         return "{" + " nome='" + getNome() + "'" + ", id='" + getId() + "'" + ", arquivo='" + getArquivo() + "'"

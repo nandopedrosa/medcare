@@ -21,6 +21,8 @@
   <!-- use the latest vue-select release -->
   <script src="https://unpkg.com/vue-select@latest"></script>
   <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+  <!-- Vue The Mask.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-the-mask@0.11.1/dist/vue-the-mask.min.js"></script>
   <!-- Bootstrap core JavaScript -->
   <script src="https://code.jquery.com/jquery-3.5.0.min.js"
     integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
@@ -63,7 +65,7 @@
             </div>
             <div class="form-group">
               <label for="dataNascimento">Data da nascimento</label> *
-              <input class="form-control" id="dataNascimento" name="dataNascimento" v-model="dataNascimento" type="text"
+              <input v-mask="'##/##/####'" class="form-control" id="dataNascimento" name="dataNascimento" v-model="dataNascimento" type="text"
                 value="">
             </div>
             <div class="form-group">
@@ -94,7 +96,9 @@
   <script>
 
     Vue.component('v-select', VueSelect.VueSelect);  
-
+    Vue.use(VueTheMask);
+    
+    //Dados como uma função para que sejam resetados quando a página for refrescada
     function initialState() {
       return {
         id: '',
@@ -115,6 +119,8 @@
         return initialState();
       },
       methods: {
+
+        //Salva o formulário
         salvar: function () {
           var self = this;
           $.ajax({

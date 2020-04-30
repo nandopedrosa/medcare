@@ -97,6 +97,7 @@
     ================================================== -->
   <script>
 
+    //Dados como uma função para que sejam resetados quando a página for refrescada
     function initialState() {
       return {
         id: '',
@@ -117,24 +118,30 @@
         return initialState();
       },
       methods: {
+
+        //Prepara um arquivo para upload
         handleFileUpload: function () {
           this.file = this.$refs.file.files[0];
           this.filename = this.file.name
           jQuery('#file-input-label').text(this.filename);          
         },
 
+        //Faz o download do arquivo
         baixarArquivo: function(idRegistro) {     
-          console.log("o ID é " + this.id);     
           jQuery.get("/baixar-bula/" + this.id);
         },
 
+        //Retorna a URL para download de um arquivo
         getDownloadUrl: function(idRegistro) {
           return "/baixar-bula/" + this.id;
         },
 
+        //Salva o formulario
         salvar: function () {
           var self = this;
           var formData = new FormData();
+
+          //Usamos FormData para conseguirmos enviar um arquivo binário (upload)
           formData.append('id', this.id);
           formData.append('nome', this.nome);          
           formData.append('indicacao', this.indicacao);
@@ -142,6 +149,7 @@
           formData.append("file", this.file);   
           formData.append("filename", this.filename);          
 
+          //Usamos AXIOS para conseguirmos enviar um arquivo binário (upload)
           axios.post('/medicamentos',
             formData,
             { 

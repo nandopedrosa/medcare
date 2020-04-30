@@ -1,7 +1,6 @@
 package app;
 
 import static spark.Spark.*;
-
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletResponse;
 import app.util.*;
@@ -14,6 +13,8 @@ import app.tratamento.TratamentoService;
 import com.google.gson.Gson;
 
 public class Application {
+    
+    
     public static void main(String[] args) {
         // Configurações
         port(4567);

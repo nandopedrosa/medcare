@@ -6,6 +6,14 @@ import org.sql2o.Query;
 
 public class PacienteDao {
 
+    
+    /** 
+     * 
+     * Retorna todos os pacientes de um determinado usuário
+     * 
+     * @param idUsuario
+     * @return List<Paciente>
+     */
     public static List<Paciente> getAllPacientes(int idUsuario) {        
         Query query = 
             DaoUtil.getConexao()
@@ -18,6 +26,14 @@ public class PacienteDao {
         return pacientes;
     }
 
+    
+    /** 
+     * 
+     * Retorna um paciente específico de um usuário
+     * 
+     * @param idPaciente
+     * @return Paciente
+     */
     public static Paciente getPaciente(int idPaciente) {        
         Paciente p = new Paciente();
         Query query = 
@@ -31,6 +47,13 @@ public class PacienteDao {
         return p;
     }
 
+    
+    /** 
+     * 
+     * Delete um paciente - cuidado
+     * 
+     * @param idPaciente
+     */
     public static void deletarPaciente(int idPaciente) {
         Query query = 
             DaoUtil.getConexao()
@@ -40,6 +63,14 @@ public class PacienteDao {
         query.executeUpdate();
     }
 
+    
+    /** 
+     * 
+     * Insere um novo paciente
+     * 
+     * @param p
+     * @return int
+     */
     public static int inserirPaciente(Paciente p) {
         String sql = "insert into paciente "
         .concat("(id_usuario, nome, sexo, data_de_nascimento, peso) ")
@@ -57,6 +88,13 @@ public class PacienteDao {
         return key;        
     }
     
+    
+    /** 
+     * 
+     * Atualiza um paciente existente
+     * 
+     * @param p
+     */
     public static void atualizarPaciente(Paciente p) {
         String sql = "update paciente set "
         .concat("nome = :nome, ")

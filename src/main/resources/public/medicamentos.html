@@ -53,8 +53,10 @@
       </div>
       <div class="row">
         <div class="col-sm-12">
+          <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
           <template>
-            <vuetable ref="vuetable" :api-mode="false" :data="dadosDaTabela" v-bind:fields="camposDaTabela" data-path="">
+            <vuetable ref="vuetable" :api-mode="false" :data="dadosDaTabela" v-bind:fields="camposDaTabela"
+              data-path="">
               <div slot="actions" slot-scope="props">
                 <button @click="deletar(props.rowData)" type="button" class="btn btn-sm btn-danger mr-2"
                   title="Deletar">
@@ -95,28 +97,51 @@
           { name: 'indicacao', title: 'Indicação' },
           { name: 'actions', title: 'Ações' }
         ],
-        dadosDaTabela: []
+        dadosDaTabela: [],
+        status: '',
+        msg: '',
+        alertClass: ''
       },
       methods: {
+        
+        //Carrega todos os medicamentos do usuáriO
         carregarMedicamentos() {
           self = this;
-          jQuery.get("/medicamentos", function(response) {          
+          jQuery.get("/medicamentos", function (response) {
             self.dadosDaTabela = response.data;
-          });         
+          });
         },
+
+        //Prepara o registro para edição e redireciona para a tela de edição de medicamento
         editar(data) {
           window.localStorage.setItem("idModelo", data.id);
           window.location.href = '/medicamento.html';
         },
+
+        //Delete um medicamento (após confirmação)
         deletar(data) {
+          var result = confirm("Tem certeza?");
+          if (!result) 
+            return;  
+          
           var self = this;
+          self.status = '';
+          self.msg = '';
           $.ajax({
             url: '/medicamentos/' + data.id,
             type: 'DELETE',
-            success: function (result) {
-              self.carregarMedicamentos();
+            success: function (response) {
+              self.status = response.status;
+              self.msg = response.msg;
+
+              if (self.status == 'SUCESSO') {
+                self.alertClass = 'alert-success';
+                self.carregarMedicamentos();
+              } else {
+                self.alertClass = 'alert-danger';
+              }
             }
-          });          
+          });
         }
       },
       mounted() {

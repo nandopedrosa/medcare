@@ -92,6 +92,8 @@
         pacientes: []
       },
       methods: {
+       
+        //Recebe M ou F - retorna Masculino ou Feminino
         sexoPorExtenso: function (sexoChar) {
           var retorno = '';
           if (sexoChar == 'M')
@@ -101,10 +103,14 @@
 
           return retorno;
         },
+
+        //Entra no prontuario de um paciente
         verPaciente: function (idPaciente) {
           window.localStorage.setItem("idPaciente", idPaciente);
           window.location.href = '/prontuario.html';
         },
+
+        //Entra na tela de edição de um paciente
         editarPaciente: function (idPaciente) {
           window.localStorage.setItem("idModelo", idPaciente);
           window.location.href = '/paciente.html';
@@ -112,6 +118,8 @@
       },
       mounted() {
         var self = this;
+
+        //Carrega os pacientes do sistema
         jQuery.get("/pacientes", function (response) {
           self.pacientes = response.data;
         });

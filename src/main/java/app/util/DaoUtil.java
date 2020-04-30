@@ -7,6 +7,12 @@ public class DaoUtil {
         
     private static Connection conexao;
     
+    
+    /** 
+     * Retorna uma conexão ao banco de dados. Garante que só existe uma única conexão (Singleton).
+     * 
+     * @return Connection
+     */
     public static Connection getConexao() {                       
         final boolean isProducao = false; 
         if (conexao == null) {

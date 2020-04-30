@@ -33,46 +33,123 @@ public class Paciente {
         this.peso = peso;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return int
+     */
     public int getId() {
         return this.id;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return int
+     */
     public int getIdUsuario() {
         return this.idUsuario;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param idUsuario
+     */
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return String
+     */
     public String getNome() {
         return this.nome;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param nome
+     */
     public void setNome(String nome) {
         this.nome = nome;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return String
+     */
     public String getSexo() {
         return this.sexo;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param sexo
+     */
     public void setSexo(String sexo) {
         this.sexo = sexo;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return long
+     */
     public long getDataNascimento() {
         return this.dataNascimento;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return long
+     */
     public long getIdade() {
         return this.idade;
     }
 
+    
+    /** 
+     * 
+     * Atualiza a idade com base na data de nascimento
+     * 
+     * @return long
+     */
     public void atualizarIdade() {
         if (this.dataNascimento != 0L) {
             Instant instant = Instant.ofEpochSecond(this.dataNascimento);
@@ -82,13 +159,26 @@ public class Paciente {
         }
     }
 
-    //Esse método é utilizado quando a data da nascimento vem do BD (unix epoch)
+    
+    /** 
+     * 
+     * Getter padrão
+     * Esse método é utilizado quando a data da nascimento vem do BD (unix epoch) 
+     * @param dataNascimento
+     */
+    
     public void setDataNascimento(long dataNascimento) {
         this.dataNascimento = dataNascimento;
         this.atualizarIdade();
     }
 
-    //Esse método é utilizado quando a data da nascimento vem do browser (dd/mm/yyyy)
+    
+    /** 
+     * 
+     * Seta a data de nascimento baseado na máscara recebida do navegador (dd/mm/yyyy)
+     * 
+     * @param dataStr
+     */    
     public void setDataNascimento(String dataStr) {
         if (ValidacaoUtil.isNumeric(dataStr)) {
             // Veio do banco de dados (UNIX time)
@@ -106,18 +196,47 @@ public class Paciente {
         }
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return double
+     */
     public double getPeso() {
         return this.peso;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param peso
+     */
     public void setPeso(double peso) {
         this.peso = peso;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param pesoStr
+     */
     public void setPeso(String pesoStr) {
         this.peso = pesoStr.isEmpty() ? 0 : Double.parseDouble(pesoStr);
     }
 
+    
+    /** 
+     * 
+     * Equals padrão
+     * 
+     * @param o
+     * @return boolean
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -131,11 +250,25 @@ public class Paciente {
                 && peso == paciente.peso;
     }
 
+    
+    /** 
+     * 
+     * Hashcode padrão
+     * 
+     * @return int
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, idUsuario, nome, sexo, dataNascimento, peso);
     }
 
+    
+    /** 
+     * 
+     * toString padrão
+     * 
+     * @return String
+     */
     @Override
     public String toString() {
         return "{" + " id='" + getId() + "'" + ", idUsuario='" + getIdUsuario() + "'" + ", nome='" + getNome() + "'"

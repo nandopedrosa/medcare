@@ -25,6 +25,8 @@
   <!-- use the latest vue-select release -->
   <script src="https://unpkg.com/vue-select@latest"></script>
   <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+  <!-- Vue The Mask.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-the-mask@0.11.1/dist/vue-the-mask.min.js"></script>
   <!-- Bootstrap core JavaScript -->
   <script src="https://code.jquery.com/jquery-3.5.0.min.js"
     integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
@@ -180,7 +182,7 @@
             <div v-show="msg" class="alert" v-bind:class="alertClass" role="alert"> {{msg}} </div>
             <div class="form-group">
               <label for="dataConsulta">Data</label> *
-              <input class="form-control" id="dataConsulta" name="dataConsulta" v-model="dataConsulta" type="text"
+              <input v-mask="'##/##/####'" class="form-control" id="dataConsulta" name="dataConsulta" v-model="dataConsulta" type="text"
                 value="">
             </div>
             <div class="form-group">
@@ -279,6 +281,7 @@
 
     Vue.use(Vuetable);
     Vue.component('v-select', VueSelect.VueSelect);
+    Vue.use(VueTheMask);
 
     //Pega um array de objetos e retorna uma string de ID's separados por vírgula
     var toCommaSeparatedString = function (objArray) {
@@ -290,6 +293,7 @@
       return retorno.substring(0, retorno.length - 1);
     }
 
+    //Dados como uma função para que sejam resetados quando a página for refrescada
     function initialState() {
       return {
         id: '',
@@ -341,6 +345,8 @@
       },
 
       watch: {
+        //Utilizado na Modal de Tratamento
+        //Quando um medicamento é selecionado, ele é adicionado ao tratamento e removido da lista de opções
         medicamentoSelecionado: function () {
           if (this.medicamentoSelecionado.id) {
             //Adiciona o medicamento ao tratamento  
@@ -357,6 +363,7 @@
       },
 
       methods: {
+        //Prepara o upload para anexos de consulta
         handleFileUpload: function (modelo) {
           if (modelo == 'consulta') {
             this.fileAnexoConsulta = this.$refs.fileAnexoConsulta.files[0];
@@ -365,10 +372,12 @@
           jQuery('#file-input-anexo-consulta-label').text(this.filenameAnexoConsulta);
         },
 
+        //Retorna a URL para download de um anexo de consulta
         getAnexoConsultaDownloadUrl: function (id) {
           return "/baixar-anexo-consulta/" + id;
         },
 
+        //Salva o formulário de tratamento
         salvarTratamento: function () {
           var self = this;
           $.ajax({
@@ -378,7 +387,7 @@
               'id': self.idTratamento,
               'idPaciente': localStorage.getItem("idPaciente"),
               'quadro': self.quadroTratamento,
-              'idMedicamentos': toCommaSeparatedString(self.medicamentosSelecionados)
+              'idMedicamentos': toCommaSeparatedString(self.medicamentosSelecionados) //medicamentos por extenso
             },
             success: function (response) {
               self.status = response.status;
@@ -394,6 +403,7 @@
           });
         },
 
+        //Salva o formulário de consulta 
         salvarConsulta: function () {
           var self = this;
           $.ajax({
@@ -421,14 +431,18 @@
           });
         },
 
+        //Adiciona um anexo à consulta
         salvarAnexoConsulta: function () {
           var self = this;
+
+          //Utilizamos FormData para permitir upload
           var formData = new FormData();
           formData.append('idConsulta', this.idConsulta);
           formData.append('nomeAnexoConsulta', this.nomeAnexoConsulta);
           formData.append('fileAnexoConsulta', this.fileAnexoConsulta);
           formData.append('filenameAnexoConsulta', this.filenameAnexoConsulta);
 
+          //Utilizamos AXIOS para permitir upload
           axios.post('/adicionar-anexo-consulta',
             formData,
             {
@@ -447,7 +461,12 @@
           });
         },
 
+        //Deleta um medicamento de um tratamento
         deletarMedicamento: function (id) {
+          var result = confirm("Tem certeza?");
+          if (!result) 
+            return;  
+
           for (var i = 0; i < this.medicamentosSelecionados.length; i++) {
             if (this.medicamentosSelecionados[i].id == id) {
               this.opcoesMedicamentos.push(this.medicamentosSelecionados[i]);
@@ -457,7 +476,12 @@
           }
         },
 
+        //Deleta o anexo de uma consulta
         deletarAnexoConsulta: function (id) {
+          var result = confirm("Tem certeza?");
+          if (!result) 
+            return;  
+
           var self = this;
           $.ajax({
             url: '/anexo-consulta/' + id,
@@ -473,11 +497,15 @@
           });
         },
 
+        
+        //Abre uma nova aba para detalhar um medicamento (ver bula, etc.)
         verMedicamento: function (id) {
           window.localStorage.setItem("idModelo", id);
           window.open('/medicamento.html', '_blank');
         },
 
+        
+        //Recebe M ou F, retorna Masculino ou Feminino
         sexoPorExtenso: function (sexoChar) {
           var retorno = '';
           if (sexoChar == 'M')
@@ -488,6 +516,7 @@
           return retorno;
         },
 
+        //Prepara os dados da modal de anexo consulta
         prepararModalAnexoConsulta() {
           this.filenameAnexoConsulta = '';
           this.fileAnexoConsulta = '';
@@ -496,6 +525,7 @@
           jQuery('#file-input-anexo-consulta-label').text('');
         },
 
+        //Prepara os dados da modal de tratamento
         prepararModalTratamento(isNovo) {
           var self = this;
           this.msg = '';
@@ -514,6 +544,8 @@
           }
         },
 
+        
+        //Prepara os dados da modal de consulta
         prepararModalConsulta(isNovo) {
           var self = this;
           this.msg = '';
@@ -533,23 +565,30 @@
             });
 
             jQuery.get("/anexos-consultas/" + self.idConsulta, function (response) {
-              console.log(response);
+              
               self.anexosConsulta = response.data;
             });
           }
         },
 
+        //Adiciona um anexo a uma consulta
         adicionarAnexoConsulta(data) {
           this.idConsulta = data.id;
           this.prepararModalAnexoConsulta();
         },
 
+        //Edita uma consulta
         editarConsulta(data) {
           this.idConsulta = data.id;
           this.prepararModalConsulta(false);
         },
 
+        //Delete uma consulta
         deletarConsulta(data) {
+          var result = confirm("Tem certeza?");
+          if (!result) 
+            return;  
+
           var self = this;
           $.ajax({
             url: '/consultas/' + data.id,
@@ -560,12 +599,19 @@
           });
         },
 
+        
+        //Edita um tratamento
         editarTratamento(data) {
           this.idTratamento = data.id;
           this.prepararModalTratamento(false);
         },
 
+        //Deleta um tratamento
         deletarTratamento(data) {
+          var result = confirm("Tem certeza?");
+          if (!result) 
+            return;  
+
           var self = this;
           $.ajax({
             url: '/tratamentos/' + data.id,
@@ -576,6 +622,7 @@
           });
         },
 
+        //Carrega todos os tratamentos do paciente
         carregarTratamentos() {
           self = this;
           $.ajax({
@@ -590,6 +637,8 @@
           });
         },
 
+        
+        //Carrega todas as consultas do paciente
         carregarConsultas() {
           self = this;
           $.ajax({
@@ -604,6 +653,7 @@
           });
         },
 
+        //Carrega as opcoes de medicamentos (em caso de um tratamento existente, exclui os que já foram adicionados)
         carregarOpcoesMedicamentos(idTratamento) {
           var self = this;
           jQuery.get("/medicamentos", function (response) {

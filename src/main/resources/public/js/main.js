@@ -18,6 +18,8 @@ Vue.config.devtools = true
   }
 
 //Components
+
+//Header
 Vue.component('meu-header', {  
   template: `
   <header>
@@ -53,6 +55,7 @@ Vue.component('meu-header', {
   `
 })
 
+//Footer
 Vue.component('meu-footer', {  
   template: `
   <footer class="text-muted">

@@ -6,6 +6,14 @@ import org.sql2o.Query;
 
 public class ConsultaDao {
 
+    
+    /** 
+     * 
+     * Retorna todas as consultas de um paciente    
+     * 
+     * @param idPaciente
+     * @return List<Consulta>
+     */
     public static List<Consulta> getAllConsultas(int idPaciente) {
         Query query = DaoUtil.getConexao()
                 .createQuery("select * from consulta where id_paciente = :idPaciente order by data desc")
@@ -16,6 +24,14 @@ public class ConsultaDao {
         return pacientes;
     }
 
+    
+    /** 
+     * 
+     * Retorna os anexos de uma consulta
+     * 
+     * @param idConsulta
+     * @return List<AnexoConsulta>
+     */
     public static List<AnexoConsulta> getAnexosConsulta(int idConsulta) {
         Query query = DaoUtil.getConexao()
         .createQuery("select * from anexo_consulta where id_consulta = :idConsulta order by nome")
@@ -25,6 +41,14 @@ public class ConsultaDao {
         return anexos;
     }
 
+    
+    /** 
+     * 
+     * Retorna um anexo específico de uma consulta
+     * 
+     * @param idAnexoConsulta
+     * @return AnexoConsulta
+     */
     public static AnexoConsulta getAnexoConsulta(int idAnexoConsulta) {
         Query query = DaoUtil.getConexao()
             .createQuery("select * from anexo_consulta where id = :idAnexoConsulta")
@@ -34,6 +58,14 @@ public class ConsultaDao {
             return anexo;
     }
 
+    
+    /** 
+     * 
+     * Retorna uma consulta específica de um paciente
+     * 
+     * @param idConsulta
+     * @return Consulta
+     */
     public static Consulta getConsulta(int idConsulta) {
         Consulta c = new Consulta();
         Query query = DaoUtil.getConexao()
@@ -45,14 +77,32 @@ public class ConsultaDao {
         return c;
     }
 
+    
+    /** 
+     * 
+     * Delete uma consulta específica de um paciente juntamente com seus anexos
+     * 
+     * @param idConsulta
+     */
     public static void deletarConsulta(int idConsulta) {
         Query query = DaoUtil.getConexao()
+        .createQuery("delete from anexo_consulta where id_consulta = :id")
+        .addParameter("id",idConsulta);
+        query.executeUpdate();
+        
+        query = DaoUtil.getConexao()
         .createQuery("delete from consulta where id = :id")
         .addParameter("id",idConsulta);
-
         query.executeUpdate();
     }
 
+    
+    /** 
+     * 
+     * Deleta um anexo específico de uma consulta
+     * 
+     * @param idAnexoConsulta
+     */
     public static void deletarAnexoConsulta(int idAnexoConsulta) {
         Query query = DaoUtil.getConexao()
         .createQuery("delete from anexo_consulta where id = :id")
@@ -61,6 +111,14 @@ public class ConsultaDao {
         query.executeUpdate();
     }
 
+    
+    /** 
+     * 
+     * Insere uma nova consulta (sem anexo)
+     * 
+     * @param c
+     * @return int
+     */
     public static int inserirConsulta(Consulta c) {
         String sql = "insert into consulta "
         .concat("(id_paciente, data, responsavel, quadro, conduta) ")
@@ -76,6 +134,17 @@ public class ConsultaDao {
         return key;
     }
 
+    
+    /** 
+     * 
+     * Insere o anexo de uma consulta
+     * 
+     * 
+     * @param idConsulta
+     * @param nome
+     * @param anexo
+     * @param filename
+     */
     public static void inserirAnexo(int idConsulta, String nome, byte[] anexo, String filename) {
         String sql = "insert into anexo_consulta "
         .concat("(id_consulta, nome, arquivo, filename) ")
@@ -91,6 +160,13 @@ public class ConsultaDao {
         query.executeUpdate();
     }
 
+    
+    /** 
+     * 
+     * Atualiza os dados básicos de uma consulta
+     * 
+     * @param c
+     */
     public static void atualizarConsulta(Consulta c) {
         String sql = "update consulta set "
         .concat("data = :data, ")

@@ -13,6 +13,14 @@ import app.util.StatusResposta;
 
 public class MedicamentoService {
 
+    
+    /** 
+     * 
+     * Retorna todos os medicamentos de um determinado usuário
+     * 
+     * @param req
+     * @return List<Medicamento>
+     */
     public static List<Medicamento> getAllMedicamentos(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -20,18 +28,50 @@ public class MedicamentoService {
         return MedicamentoDao.getAllMedicamentos(LoginService.getIdUsuarioLogado(req));
     }
 
+    
+    /** 
+     * 
+     * Retorna um medicamento específico de um usuário
+     * 
+     * @param req
+     * @return Medicamento
+     */
     public static Medicamento getMedicamento(Request req) {
         Medicamento med = new Medicamento();
         med = MedicamentoDao.getMedicamento(Integer.parseInt(req.params("id")));
         return med;
     }
 
+    
+    /** 
+     * 
+     * Delete um medicamento específico de um usuário. 
+     * Não deixa deletar caso o medicamento já esteja associado a algum tratamento
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta deletarMedicamento(Request req) {
-        MedicamentoDao.deletarMedicamento(Integer.parseInt(req.params("id")));
-        Resposta r = new Resposta(StatusResposta.SUCESSO);
+        boolean isAssociado = MedicamentoDao.isMedicamentoAssociadoTratamento(Integer.parseInt(req.params("id")));
+        Resposta r = new Resposta();
+        if(isAssociado) {
+            r.setStatus(StatusResposta.ERRO);
+            r.setMessage("O medicamento já está associado a algum tratamento de paciente");
+        } else {
+            MedicamentoDao.deletarMedicamento(Integer.parseInt(req.params("id")));
+            r = new Resposta(StatusResposta.SUCESSO);
+        }
+        
         return r;
     }
 
+    
+    /** 
+     * Insere ou atualiza um medicamento
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta salvarMedicamento(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;

@@ -13,6 +13,14 @@ import app.util.StatusResposta;
 
 public class TratamentoService {
 
+    
+    /** 
+     * 
+     * Retorna todos os tratamentos de um determinado paciente
+     * 
+     * @param req
+     * @return List<Tratamento>
+     */
     public static List<Tratamento> getAllTratamentos(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -20,6 +28,14 @@ public class TratamentoService {
         return TratamentoDao.getAllTratamentos(Integer.parseInt(req.queryParams("idPaciente")));
     }
 
+    
+    /** 
+     * 
+     * Retorna um tratamento específico de um paciente
+     * 
+     * @param req
+     * @return Tratamento
+     */
     public static Tratamento getTratamento(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -29,6 +45,14 @@ public class TratamentoService {
         return trat;
     }
 
+    
+    /** 
+     * 
+     * Deleta um tratamento específico de um paciente. Também deleta os medicamentos associados.
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta deletarTratamento(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -38,6 +62,17 @@ public class TratamentoService {
         return r;
     }
 
+    
+    /** 
+     * 
+     * Insere ou Atualiza um tratamento específico de um paciente.
+     * 
+     * Os medicamentos associados são enviados como uma variável no Request, como uma String
+     * separada por vírgulas (id, id, id)
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta salvarTratamento(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -80,6 +115,15 @@ public class TratamentoService {
         return resposta;
     }
 
+    
+    /** 
+     * 
+     * Retorna as opções de medicamentos para um tratamento.
+     * Medicamentos já escolhidos anteriormente são desconsiderados.
+     * 
+     * @param req
+     * @return List<Medicamento>
+     */
     public static List<Medicamento> getOpcoesMedicamentos(Request req) {     
         Tratamento trat = getTratamento(req);
         List<Medicamento> medicamentosEscolhidos = trat.getMedicamentos() ;

@@ -10,6 +10,14 @@ import app.util.StatusResposta;
 
 public class PacienteService {
 
+    
+    /** 
+     * 
+     * Retorna todos os pacientes de um usuário
+     * 
+     * @param req
+     * @return List<Paciente>
+     */
     public static List<Paciente> getAllPacientes(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -23,6 +31,14 @@ public class PacienteService {
         return pacientes;
     }
 
+    
+    /** 
+     * 
+     * Retorna um paciente específico de um usuário
+     * 
+     * @param req
+     * @return Paciente
+     */
     public static Paciente getPaciente(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -33,6 +49,14 @@ public class PacienteService {
         return p;
     }
 
+    
+    /** 
+     * 
+     * Deleta um paciente - cuidado
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta deletarPaciente(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -42,6 +66,14 @@ public class PacienteService {
         return r;
     }
 
+    
+    /** 
+     * 
+     * Insere ou atualiza um paciente
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta salvarPaciente(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;

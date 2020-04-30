@@ -14,6 +14,14 @@ import com.google.gson.Gson;
 
 public class ConsultaService {
 
+    
+    /** 
+     * 
+     * Retorna todas as consultas de um paciente
+     * 
+     * @param req
+     * @return List<Consulta>
+     */
     public static List<Consulta> getAllConsultas(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -21,18 +29,43 @@ public class ConsultaService {
         return ConsultaDao.getAllConsultas(Integer.parseInt(req.queryParams("idPaciente")));
     }
 
+    
+    /** 
+     * 
+     * 
+     * Retorna uma consulta específica de um paciente
+     * 
+     * @param req
+     * @return Consulta
+     */
     public static Consulta getConsulta(Request req) {
         Consulta c = new Consulta();
         c = ConsultaDao.getConsulta(Integer.parseInt(req.params("id")));
         return c;
     }
 
+    
+    /** 
+     * 
+     * Delete uma consulta (e seus anexos) de um paciente
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta deletarConsulta(Request req) {
         ConsultaDao.deletarConsulta(Integer.parseInt(req.params("id")));
         Resposta r = new Resposta(StatusResposta.SUCESSO);
         return r;
     }
 
+    
+    /** 
+     * 
+     * Insere ou atualiza uma consulta
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta salvarConsulta(Request req) {
         if (!LoginService.isUsuarioLogado(req))
             return null;
@@ -45,8 +78,7 @@ public class ConsultaService {
         String dataStr = req.queryParams("data");
         String quadro = req.queryParams("quadro");
         String responsavel = req.queryParams("responsavel");
-        String conduta = req.queryParams("conduta");
-        // TODO: anexos
+        String conduta = req.queryParams("conduta");        
 
         // Validações
         if (ValidacaoUtil.blank(dataStr, quadro, responsavel, conduta)) {
@@ -78,6 +110,14 @@ public class ConsultaService {
         return resposta;
     }
 
+    
+    /** 
+     * 
+     * Remove o anexo de uma consulta
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta deletarAnexoConsulta(Request req) {
         Resposta r = new Resposta();
         int idAnexoConsulta = Integer.parseInt(req.params("id"));
@@ -86,6 +126,14 @@ public class ConsultaService {
         return r;
     }
 
+    
+    /** 
+     * 
+     * Retorna os anexos de uma consulta
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta getAnexosConsulta(Request req) {
         Resposta r = new Resposta();
         int idConsulta = Integer.parseInt(req.params("id"));        
@@ -95,12 +143,28 @@ public class ConsultaService {
         return r;
     }
 
+    
+    /** 
+     * 
+     * Retorna um anexo específico de uma consulta
+     * 
+     * @param req
+     * @return AnexoConsulta
+     */
     public static AnexoConsulta getAnexoConsulta(Request req) {        
         int idAnexoConsulta = Integer.parseInt(req.params("id"));        
         AnexoConsulta anexo = ConsultaDao.getAnexoConsulta(idAnexoConsulta);        
         return anexo;
     }    
 
+    
+    /** 
+     * 
+     * Anexa um novo documento a uma consulta
+     * 
+     * @param req
+     * @return Resposta
+     */
     public static Resposta adicionarAnexo(Request req) {
         Resposta r = new Resposta();
         String filename = null;

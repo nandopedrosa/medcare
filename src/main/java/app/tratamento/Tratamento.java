@@ -20,6 +20,13 @@ public class Tratamento {
         this.quadro = quadro;
     }
 
+    
+    /** 
+     * 
+     * Retorna a lista de medicamentos do tratamento por extenso, separados por vírgula
+     * 
+     * @return String (tylenol, dipirona, etc.)
+     */
     public String getMedicamentosPorExtenso() {
         return this.medicamentosPorExtenso;
     }
@@ -32,39 +39,104 @@ public class Tratamento {
         this.medicamentosPorExtenso = this.medicamentosPorExtenso.substring(0, this.medicamentosPorExtenso.length() - 2);        
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return int
+     */
     public int getId() {
         return this.id;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return int
+     */
     public int getIdPaciente() {
         return this.idPaciente;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param idPaciente
+     */
     public void setIdPaciente(int idPaciente) {
         this.idPaciente = idPaciente;
     }
 
+    
+    /** 
+     * 
+     * Seta os medicamentos associados ao tratamento. 
+     * Também atualiza os medicamentos por extenso
+     * 
+     * @param medicamentos
+     */
     public void setMedicamentos(List<Medicamento> medicamentos) {
         this.medicamentos = medicamentos;
         atualizarMedicamentosPorExtenso();
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return List<Medicamento>
+     */
     public List<Medicamento> getMedicamentos() {
         return this.medicamentos;
     }
 
+    
+    /** 
+     * 
+     * Getter padrão
+     * 
+     * @return String
+     */
     public String getQuadro() {
         return this.quadro;
     }
 
+    
+    /** 
+     * 
+     * Setter padrão
+     * 
+     * @param quadro
+     */
     public void setQuadro(String quadro) {
         this.quadro = quadro;
     }
 
+    
+    /** 
+     * 
+     * Equals padrão
+     * 
+     * @param o
+     * @return boolean
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -77,6 +149,13 @@ public class Tratamento {
                 && Objects.equals(quadro, tratamento.quadro);
     }
 
+    
+    /** 
+     * 
+     * Hashcode padrão
+     * 
+     * @return int
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, idPaciente, medicamentos, quadro);
