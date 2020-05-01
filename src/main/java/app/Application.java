@@ -13,13 +13,36 @@ import app.tratamento.TratamentoService;
 import com.google.gson.Gson;
 
 public class Application {
-    
-    
+
+    public static boolean isProducao = false;
+
     public static void main(String[] args) {
-        // Configurações
-        port(4567);
+        if (System.getenv("DATABASE_URL") != null)
+            isProducao = true;
+
+        ProcessBuilder process = new ProcessBuilder();
+        Integer port;
+
+        // This tells our app that if Heroku sets a port for us, we need to use that
+        // port.
+        // Otherwise, if they do not, continue using port 4567.
+        if (process.environment().get("PORT") != null) {
+            port = Integer.parseInt(process.environment().get("PORT"));
+        } else {
+            port = 4567;
+        }
+
+        port(port);
+
+        // Raiz dos arquivos estáticos 
         staticFiles.location("/public");
-        staticFiles.expireTime(600L); // dez minutos
+
+        // dez minutos
+        staticFiles.expireTime(600L);
+
+        // Configuração para SSL
+        if (isProducao)
+            secure("keystore.jks", "minhapomba", null, null);
 
         /**
          * -------------- Login --------------
@@ -79,7 +102,7 @@ public class Application {
             raw.getOutputStream().close();
             res.header("Content-Type", "application/download");
             res.header("Content-Disposition", "attachment; filename=" + m.getFilename());
-            
+
             return res.raw();
         });
 
@@ -189,8 +212,8 @@ public class Application {
             Resposta r = ConsultaService.deletarAnexoConsulta(req);
             return new Gson().toJson(r);
         });
-        
-        get("/baixar-anexo-consulta/:id", (req, res) -> {            
+
+        get("/baixar-anexo-consulta/:id", (req, res) -> {
             AnexoConsulta anexo = ConsultaService.getAnexoConsulta(req);
 
             HttpServletResponse raw = res.raw();
@@ -199,10 +222,9 @@ public class Application {
             raw.getOutputStream().close();
             res.header("Content-Type", "application/download");
             res.header("Content-Disposition", "attachment; filename=" + anexo.getFilename());
-            
+
             return res.raw();
         });
-
 
     }
 

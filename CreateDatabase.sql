@@ -10,14 +10,14 @@ CREATE TABLE "paciente" (
   "id_usuario" int NOT NULL,
   "nome" varchar NOT NULL,
   "sexo" varchar NOT NULL,
-  "data_de_nascimento" long NOT NULL,
-  "peso" double
+  "data_de_nascimento" int NOT NULL,
+  "peso" decimal
 );
 
 CREATE TABLE "consulta" (
   "id" SERIAL PRIMARY KEY,
   "id_paciente" int NOT NULL,
-  "data" long NOT NULL,
+  "data" bigint NOT NULL,
   "responsavel" varchar NOT NULL,
   "quadro" varchar NOT NULL,
   "conduta" varchar NOT NULL
@@ -28,7 +28,7 @@ CREATE TABLE "anexo_consulta" (
   "id_consulta" int NOT NULL,
   "nome" varchar NOT NULL,
   "arquivo" blob NOT NULL,
-  "filename" varchar NOT NULL,
+  "filename" varchar NOT NULL
 );
 
 CREATE TABLE "medicamento" (
