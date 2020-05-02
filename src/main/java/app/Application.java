@@ -47,6 +47,12 @@ public class Application {
         /**
          * -------------- Login --------------
          */
+        get("/pagina-login", (req, res) -> {
+            res.redirect("login.html");
+            return null;
+        });
+        
+
         post("/login", (req, res) -> {
             res.type("application/json");
             return new Gson().toJson(LoginService.login(req));
