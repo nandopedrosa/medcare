@@ -27,7 +27,7 @@ CREATE TABLE "anexo_consulta" (
   "id" SERIAL PRIMARY KEY,
   "id_consulta" int NOT NULL,
   "nome" varchar NOT NULL,
-  "arquivo" blob NOT NULL,
+  "arquivo" bytea NOT NULL,
   "filename" varchar NOT NULL
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE "medicamento" (
   "nome" varchar NOT NULL,
   "indicacao" varchar NOT NULL,
   "posologia" varchar NOT NULL,
-  "bula" blob,
+  "bula" bytea,
   "filename" varchar
 );
 
