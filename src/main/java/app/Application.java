@@ -27,6 +27,7 @@ public class Application {
         // port.
         // Otherwise, if they do not, continue using port 4567.
         if (process.environment().get("PORT") != null) {
+            System.out.println("ENTROU NO PORT");
             port = Integer.parseInt(process.environment().get("PORT"));
         } else {
             port = 4567;
