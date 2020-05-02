@@ -17,8 +17,6 @@ public class Application {
     public static boolean isProducao = false;
 
     public static void main(String[] args) {
-        System.out.println("################# POMBA 1 ##########");
-
         if (System.getenv("DATABASE_URL") != null)
             isProducao = true;
 
@@ -42,13 +40,9 @@ public class Application {
         // dez minutos
         staticFiles.expireTime(600L);
 
-        System.out.println("################# POMBA 2 ##########");
-
         // Configuração para SSL
         if (isProducao)
-            secure("keystore.jks", "minhapomba", null, null);
-
-            System.out.println("################# POMBA 3 ##########");
+            secure("keystore.jks", "minhapomba", null, null);            
 
         /**
          * -------------- Login --------------
