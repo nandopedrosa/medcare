@@ -52,7 +52,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Application</mainClass>
+                            <mainClass>app.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
