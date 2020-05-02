@@ -17,6 +17,8 @@ public class Application {
     public static boolean isProducao = false;
 
     public static void main(String[] args) {
+        System.out.println("################# POMBA 1 ##########");
+
         if (System.getenv("DATABASE_URL") != null)
             isProducao = true;
 
