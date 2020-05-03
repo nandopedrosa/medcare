@@ -40,16 +40,18 @@ public class Application {
         // dez minutos
         staticFiles.expireTime(600L);
 
-        // Configuração para SSL
-      //  if (isProducao)
-        //    secure("keystore.jks", "minhapomba", null, null);            
-
         /**
          * -------------- Login --------------
          */
         post("/login", (req, res) -> {
             res.type("application/json");
             return new Gson().toJson(LoginService.login(req));
+        });
+
+        get("/logout", (req, res) -> {            
+            LoginService.logout(req);
+            res.redirect("/login.html");
+            return null;
         });
 
         get("/logado", (req, res) -> {

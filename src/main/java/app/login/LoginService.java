@@ -36,6 +36,14 @@ public class LoginService {
         return resposta;
     }
 
+     /** 
+     * Faz o logout do usuário
+     * 
+     * @param req     
+     */
+    public static void logout(Request req) {
+        req.session().attribute("usuarioAtual",null);        
+    }
     
     /** 
      * Checa se o usuário está logado utilizando uma variável de sessão

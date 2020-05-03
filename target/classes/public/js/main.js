@@ -32,9 +32,8 @@ Vue.component('meu-header', {
                 </div>
                 <div class="col-sm-4 offset-md-1 py-4">
                   <h4 class="text-white">Opções</h4>
-                  <ul class="list-unstyled">
-                    <li><a href="#" class="text-white ml-2">Perfil</a></li>                    
-                    <li><a href="#" class="text-white ml-2">Sair</a></li>                    
+                  <ul class="list-unstyled">                    
+                    <li><a href="/logout" class="text-white ml-2">Sair</a></li>                    
                   </ul>
                 </div>
               </div>
@@ -46,7 +45,7 @@ Vue.component('meu-header', {
           <a href="/index.html" class="navbar-brand d-flex align-items-center">            
             <strong>Medcare</strong>
           </a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+          <button id="menu-toggler" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
         </div>
@@ -73,6 +72,7 @@ Vue.component('meu-footer', {
 //Controllers
 var header = new Vue({
   el : '#meu-header'
+ 
 })
 
 var footer = new Vue({
