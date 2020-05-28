@@ -147,7 +147,7 @@ public class TratamentoDao {
        List<Map<String,Object>> medIds =  query.executeAndFetchTable().asList();
 
        for(Map<String,Object> medId: medIds) {
-           medicamentos.add(MedicamentoDao.getMedicamento((Integer)medId.get("id_medicamento")));
+           medicamentos.add(MedicamentoDao.getMedicamentoResumido((Integer)medId.get("id_medicamento")));
        }
        return medicamentos;
     }

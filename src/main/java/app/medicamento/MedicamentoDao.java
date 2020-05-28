@@ -50,7 +50,26 @@ public class MedicamentoDao {
     
     /** 
      * 
-     * Retorna um medicamento específico de um usuário
+     * Retorna um medicamento específico de um usuário, resumido (sem bula)
+     * 
+     * @param idMedicamento
+     * @return Medicamento
+     */
+    public static Medicamento getMedicamentoResumido(int idMedicamento) {        
+        Medicamento med = new Medicamento();
+        Query query = 
+            DaoUtil.getConexao()
+            .createQuery("select id, nome, indicacao, posologia, id_usuario from medicamento where id = :id")            
+            .addParameter("id", idMedicamento)
+            .addColumnMapping("id_usuario", "idUsuario");             
+
+        med = query.executeAndFetchFirst(Medicamento.class);        
+        return med;
+    }
+
+    /** 
+     * 
+     * Retorna um medicamento espefício de um usuário
      * 
      * @param idMedicamento
      * @return Medicamento
