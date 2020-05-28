@@ -16,7 +16,7 @@ public class MedicamentoDao {
     public static List<Medicamento> getAllMedicamentos(int idUsuario) {        
         Query query = 
             DaoUtil.getConexao()
-            .createQuery("select id, id_usuario, nome, indicacao, posologia from medicamento where id_usuario = :idUsuario order by nome")            
+            .createQuery("select id, id_usuario, nome, indicacao, posologia from medicamento where id_usuario = :idUsuario order by indicacao")            
             .addParameter("idUsuario", idUsuario)
             .addColumnMapping("id_usuario", "idUsuario"); 
 
